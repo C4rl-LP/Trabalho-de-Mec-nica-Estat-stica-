@@ -11,7 +11,8 @@ O README descreve simulação da trajetória de uma partícula pela equação es
 - O notebook básico descreve a atualização de Langevin com ruído gaussiano de variância `dt` e registra histogramas em HDF5.
 - O notebook de potencial estuda uma forma periódica por série de Fourier.
 - O notebook Fokker–Planck implementa uma evolução chamada Crank–Nicolson e compara um caso com expressão analítica.
-- O script auxiliar contém código de simulação e visualização; a função de visualização referencia `Slider` e `CheckButtons`, cujos imports não aparecem no trecho inspecionado.
+- `utils_coisa/solver.py` contém o solver de Langevin; `vizualizacao_initial.py` reexporta a classe para manter compatibilidade. O notebook `simulacao_langevin_serra_gaussiana.ipynb` usa o solver para a simulação e para estimar a inclinação da média em função de `tau_resposta`. A classe agora também aceita um gerador aleatório opcional e retorna os tempos após cada passo. O notebook ainda não foi executado.
+- `vizualizacao_initial.py` mantém a visualização de histogramas com imports locais de HDF5 e widgets; importar o solver não exige essas dependências opcionais.
 - O repositório contém uma subpasta espelhada. Alguns arquivos conferidos são idênticos entre as duas cópias; não determinei qual localização deve ser mantida como fonte principal.
 
 ## Limites e pendências

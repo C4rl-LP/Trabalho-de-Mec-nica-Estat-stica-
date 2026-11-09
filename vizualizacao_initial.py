@@ -1,87 +1,6 @@
-import h5py
 import numpy as np
 import matplotlib.pyplot as plt
-import ipywidgets as widgets
-from IPython.display import display
-
-class langevin:
-    def __init__(self, dt: float, tau_resposta: float, g: float,N_pontos: int, vderivada, funcao_resposta):
-        self.dt = dt
-        self.tau_resposta = tau_resposta
-        self.g = g
-        self.N_pontos = N_pontos
-        self.funcao_resposta = funcao_resposta
-        self.vderivada = vderivada
-    def V_derivada(self, x: np.ndarray) -> np.ndarray:
-        return self.vderivada(x)
-    def Funcao_resposta(self, n:int) -> float:
-        # n aqui não é o número de pontos e sim em que passo estamos
-        return self.funcao_resposta(n)
-    def winner_process(self, dt: float, N_pontos: int) -> np.ndarray:
-        return np.random.normal(0, np.sqrt(dt), N_pontos)  
-    def resolver_ate_n(self, N:int, x0:float, quando_salvar_passo: int, bins: int = 100,range_hist: tuple = None, nome_arquivo: str = "dados.h5"):
-        N_p = self.N_pontos
-        x_atual = np.full(N_p, x0)
-        dt = self.dt
-        g = self.g
-        N_salvos = (N - 1) // quando_salvar_passo + 1
-        with h5py.File(nome_arquivo, "w") as f:
-            histogramas = f.create_dataset("histogramas", shape=(N_salvos, bins), dtype=np.float64)
-            tempos = f.create_dataset("tempo", shape = (N_salvos, ), dtype = np.float64)
-            bins_dataset = f.create_dataset("bins",shape=(bins,),dtype=np.float64)
-            indice_histograma = 0
-            
-            for i in range(N):
-                f = self.Funcao_resposta(i)
-                dw = self.winner_process(dt=dt, N_pontos=N_p)
-                dV = self.V_derivada(x_atual)
-                x_novo = x_atual - dV*f*dt + dw*g
-                
-                if i % quando_salvar_passo == 0:
-                    hist, edges = np.histogram(
-                        x_novo,
-                        bins=bins,
-                        range=range_hist,
-                        density=True
-                        )
-                    centros = (edges[:-1] + edges[1:]) / 2
-                    histogramas[indice_histograma] = hist
-                    tempos[indice_histograma] = i
-                    bins_dataset[:] = centros
-                    indice_histograma += 1
-                x_atual = x_novo
-    def resolver_ate_n_estatisticas(self, N:int, x0:float):
-        N_p = self.N_pontos
-        x_atual = np.full(N_p, x0)
-        dt = self.dt
-        g = self.g
-        times = np.arange(N)*dt
-        media = np.zeros(N)
-        var = np.zeros(N)
-
-
-        for i in range(N):
-            f = self.Funcao_resposta(i)
-            dw = self.winner_process(dt=dt, N_pontos=N_p)
-            dV = self.V_derivada(x_atual)
-            x_novo = x_atual - dV*f*dt + dw*g
-            x_atual = x_novo
-            media[i] = np.mean(x_atual)
-            var[i] = np.var(x_atual)
-
-        return times, media, var
-
-def resposta_periodica(n):
-    dt = 0.001
-    T = 2.0
-
-    t = n * dt
-    fase = t % T
-
-    if fase < T / 2:
-        return 1.0
-    else:
-        return 0.0
+from utils_coisa.solver import langevin, resposta_periodica
 
 def visualizar(self, nome_arquivo: str, V, F, x_min, x_max, N_forca=10):
     """
@@ -108,6 +27,9 @@ def visualizar(self, nome_arquivo: str, V, F, x_min, x_max, N_forca=10):
     # ==================================================
     # Carrega os dados
     # ==================================================
+
+    import h5py
+    from matplotlib.widgets import Slider, CheckButtons
 
     with h5py.File(nome_arquivo, "r") as arquivo:
         P = arquivo["histogramas"][:]
