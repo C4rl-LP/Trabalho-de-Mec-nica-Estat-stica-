@@ -104,9 +104,4 @@ class langevin:
                     indice_histograma += 1
 
 
-def resposta_periodica(n: int) -> float:
-    """Default square response, retained for compatibility with old notebooks."""
-    dt = 0.001
-    periodo = 2.0
-    fase = (n * dt) % periodo
-    return 1.0 if fase < periodo / 2 else 0.0
+

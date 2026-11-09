@@ -1,3 +1,3 @@
-from .solver import langevin, resposta_periodica
-
-__all__ = ["langevin", "resposta_periodica"]
+from .solver import langevin
+from .potencial_e_forca import alpha_gaussiana, Fourie_atenuacao_da_serra, funcao_resposta
+__all__ = ["langevin","alpha_gaussiana", "Fourie_atenuacao_da_serra", "funcao_resposta"]
